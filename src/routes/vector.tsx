@@ -7,16 +7,26 @@ import { createCamera, createRender, createScene } from "../helper";
 
 function groupMesh() {
   const geometry = new THREE.BoxGeometry(20, 20, 20);
-  const material = new THREE.MeshLambertMaterial({ color: 0x00ffff });
+  const material = new THREE.MeshLambertMaterial({ color: 0xffef45 });
   const group = new THREE.Group();
   const mesh1 = new THREE.Mesh(geometry, material);
+  mesh1.position.set(50, 0, 0);
+
+  geometry.translate(50,100,200,);
+
+  //可视化mesh的局部坐标系
+  const meshAxesHelper = new THREE.AxesHelper(50);
+  mesh1.add(meshAxesHelper);
+
   const mesh2 = new THREE.Mesh(geometry, material);
+
   mesh2.translateX(25);
   //把mesh1型插入到组group中，mesh1作为group的子对象
   group.add(mesh1);
   //把mesh2型插入到组group中，mesh2作为group的子对象
   group.add(mesh2);
   //把group插入到场景中作为场景子对象
+  group.position.set(50, 0, 0);
 
   return group;
 }
