@@ -13,7 +13,6 @@ export default function Basic() {
     color: 0xff0000, //0xff0000设置材质颜色为红色
   });
   
-
   const material2 = new THREE.MeshLambertMaterial({});
   const mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
   //设置网格模型在三维空间中的位置坐标，默认是坐标原点

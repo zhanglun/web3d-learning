@@ -39,6 +39,9 @@ export default function Root() {
             <li>
               <a href={`/vector`}>Vector</a>
             </li>
+            <li>
+              <a href={`/texture`}>Texture</a>
+            </li>
           </ul>
         </nav>
       </div>

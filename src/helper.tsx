@@ -17,7 +17,7 @@ export function createCamera () {
    const height = document.querySelector("#detail")?.offsetHeight;
  
    // 实例化一个透视投影相机对象
-   return new THREE.PerspectiveCamera(30, width / height, 1, 3000); 
+   return new THREE.PerspectiveCamera(30, width / height, 1, 8000); 
 }
 
 export function createRender(scene, camera) {

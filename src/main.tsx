@@ -1,4 +1,3 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Root from "./routes/root";
@@ -7,6 +6,7 @@ import Basic from "./routes/basic";
 import "./index.css";
 import Geometry from "./routes/geometry";
 import Vector from "./routes/vector";
+import Texture from "./routes/texture";
 
 const router = createBrowserRouter([
   {
@@ -25,6 +25,10 @@ const router = createBrowserRouter([
       {
         path: "/vector",
         element: <Vector />,
+      },
+      {
+        path: "/texture",
+        element: <Texture />,
       },
     ],
   },
