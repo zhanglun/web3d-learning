@@ -46,6 +46,11 @@ export default function Root() {
               <a href={`/gltf`}>Gltf</a>
             </li>
           </ul>
+          <ul>
+            <li>
+              <a href={'/circular-arc'}>Circular Arc</a>
+            </li>
+          </ul>
         </nav>
       </div>
       <div id="detail">

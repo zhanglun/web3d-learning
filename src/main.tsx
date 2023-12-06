@@ -8,6 +8,7 @@ import Geometry from "./routes/geometry";
 import Vector from "./routes/vector";
 import Texture from "./routes/texture";
 import { GLTF } from "./routes/gltf";
+import { CircularArc } from "./routes/CircularArc";
 
 const router = createBrowserRouter([
   {
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
       {
         path: "/gltf",
         element: <GLTF />,
+      },
+      {
+        path: "/circular-arc",
+        element: <CircularArc />,
       },
     ],
   },
