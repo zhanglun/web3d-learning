@@ -7,6 +7,7 @@ import "./index.css";
 import Geometry from "./routes/geometry";
 import Vector from "./routes/vector";
 import Texture from "./routes/texture";
+import { GLTF } from "./routes/gltf";
 
 const router = createBrowserRouter([
   {
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
       {
         path: "/texture",
         element: <Texture />,
+      },
+      {
+        path: "/gltf",
+        element: <GLTF />,
       },
     ],
   },

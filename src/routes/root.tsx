@@ -42,6 +42,9 @@ export default function Root() {
             <li>
               <a href={`/texture`}>Texture</a>
             </li>
+            <li>
+              <a href={`/gltf`}>Gltf</a>
+            </li>
           </ul>
         </nav>
       </div>

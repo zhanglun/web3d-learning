@@ -24,7 +24,7 @@ export default function Texture() {
 
   const mesh = new THREE.Mesh(geometry, material);
 
-  // scene.add(mesh);
+  scene.add(mesh);
 
   const pointLight = new THREE.PointLight(0x00ff00, 50000.0);
 
@@ -95,7 +95,7 @@ export default function Texture() {
 
     const camera = createCamera();
 
-    camera.position.set(5000, 5000, 5000);
+    camera.position.set(500, 500, 500);
     camera.lookAt(0, 0, 0);
 
     const renderer = createRender(scene, camera);
