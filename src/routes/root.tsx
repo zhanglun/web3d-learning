@@ -51,6 +51,16 @@ export default function Root() {
               <a href={'/circular-arc'}>Circular Arc</a>
             </li>
           </ul>
+          <ul>
+            <li>
+              <a href={'/kid'}>Kid</a>
+            </li>
+          </ul>
+          <ul>
+            <li>
+              <a href={'/solar-system'}>Solar System</a>
+            </li>
+          </ul>
         </nav>
       </div>
       <div id="detail">

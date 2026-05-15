@@ -9,6 +9,8 @@ import Vector from "./routes/vector";
 import Texture from "./routes/texture";
 import { GLTF } from "./routes/gltf";
 import { CircularArc } from "./routes/CircularArc";
+import Kid from "./routes/kid";
+import SolarSystemRoute from "./routes/solar-system";
 
 const router = createBrowserRouter([
   {
@@ -16,30 +18,14 @@ const router = createBrowserRouter([
     element: <Root />,
     errorElement: <ErrorPage />,
     children: [
-      {
-        path: "/basic",
-        element: <Basic />,
-      },
-      {
-        path: "/geometry",
-        element: <Geometry />,
-      },
-      {
-        path: "/vector",
-        element: <Vector />,
-      },
-      {
-        path: "/texture",
-        element: <Texture />,
-      },
-      {
-        path: "/gltf",
-        element: <GLTF />,
-      },
-      {
-        path: "/circular-arc",
-        element: <CircularArc />,
-      },
+      { path: "/basic", element: <Basic /> },
+      { path: "/geometry", element: <Geometry /> },
+      { path: "/vector", element: <Vector /> },
+      { path: "/texture", element: <Texture /> },
+      { path: "/gltf", element: <GLTF /> },
+      { path: "/circular-arc", element: <CircularArc /> },
+      { path: "/kid", element: <Kid /> },
+      { path: "/solar-system", element: <SolarSystemRoute /> },
     ],
   },
 ]);
