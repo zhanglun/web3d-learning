@@ -169,8 +169,8 @@ export default function SolarSystem() {
           {selectedPlanet && (
             <button onClick={handleDeselect} style={{
               ...btnStyle(false),
-              borderColor: selectedColor,
-              color: selectedColor,
+              borderColor: selectedPlanet.color,
+              color: selectedPlanet.color,
             }}>
               取消跟踪
             </button>
