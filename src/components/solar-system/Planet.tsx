@@ -19,6 +19,7 @@ interface PlanetProps {
   isSelected: boolean;
   onSelect: (planet: PlanetData) => void;
   onDeselect: () => void;
+  onPositionUpdate?: (nameEn: string, position: THREE.Vector3) => void;
 }
 
 export function Planet({
@@ -29,6 +30,7 @@ export function Planet({
   isSelected,
   onSelect,
   onDeselect,
+  onPositionUpdate,
 }: PlanetProps) {
   // orbitGroup 绕太阳公转，meshGroup 在轨道位置上
   const orbitGroupRef = useRef<THREE.Group>(null);
@@ -51,6 +53,8 @@ export function Planet({
     // 更新世界坐标
     if (meshRef.current) {
       meshRef.current.getWorldPosition(worldPosition.current);
+      // 上报实时位置给父组件（用于相机跟踪）
+      onPositionUpdate?.(data.nameEn, worldPosition.current);
     }
   });
 
