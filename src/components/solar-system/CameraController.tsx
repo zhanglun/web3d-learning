@@ -1,7 +1,7 @@
 // src/components/solar-system/CameraController.tsx
-// 相机控制 — 飞行动画 + 行星跟踪 + OrbitControls 动态缩放
+// 相机控制 — 飞行动画 + 行星跟踪 + 自由缩放旋转
 
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
@@ -34,9 +34,10 @@ export function CameraController({
   const flightStart = useRef(new THREE.Vector3());
   const flightEnd = useRef(new THREE.Vector3());
   const flightTargetPoint = useRef(new THREE.Vector3());
-  const isFlying = useRef(false);
 
-  // 飞向指定位置
+  // 用 state 驱动 enabled，确保 React re-render
+  const [isFlying, setIsFlying] = useState(false);
+
   useEffect(() => {
     if (flyToTarget) {
       flightStart.current.copy(camera.position);
@@ -46,34 +47,32 @@ export function CameraController({
         .normalize();
       flightEnd.current.copy(flyToTarget).add(direction.multiplyScalar(flyToDistance));
       flightProgress.current = 0;
-      isFlying.current = true;
+      setIsFlying(true);
     }
   }, [flyToTarget, flyToDistance, camera]);
 
-  // 预设视角飞行
   useEffect(() => {
     if (preset) {
       flightStart.current.copy(camera.position);
       flightEnd.current.set(...preset.position);
       flightTargetPoint.current.set(...preset.target);
       flightProgress.current = 0;
-      isFlying.current = true;
+      setIsFlying(true);
     }
   }, [preset, camera]);
 
   useFrame((_, delta) => {
-    // 飞行动画阶段
     if (flightProgress.current !== null) {
       flightProgress.current += delta / FLIGHT_DURATION;
 
       if (flightProgress.current >= 1) {
         flightProgress.current = null;
-        isFlying.current = false;
         camera.position.copy(flightEnd.current);
         if (controlsRef.current) {
           controlsRef.current.target.copy(flightTargetPoint.current);
           controlsRef.current.update();
         }
+        setIsFlying(false);
         onFlightComplete();
       } else {
         const t = flightProgress.current;
@@ -87,25 +86,17 @@ export function CameraController({
       return;
     }
 
-    // 跟踪模式：持续跟随行星运动
+    // 跟踪模式：平滑移动 target 到行星位置，但不约束相机距离和角度
     if (isFollowing && followTarget && controlsRef.current) {
       controlsRef.current.target.lerp(followTarget, 0.05);
-
-      // 保持相机与目标的相对距离
-      const currentDist = camera.position.distanceTo(followTarget);
-      const ratio = followDistance / Math.max(currentDist, 0.001);
-      if (Math.abs(ratio - 1) > 0.05) {
-        const dir = new THREE.Vector3().subVectors(camera.position, followTarget).normalize();
-        camera.position.copy(followTarget).add(dir.multiplyScalar(followDistance));
-      }
-
       controlsRef.current.update();
     }
 
-    // 动态缩放速度：基于相机到 OrbitControls target 的距离，对数映射
+    // 动态缩放速度：距离越远缩放步长越大
     if (controlsRef.current) {
       const distToTarget = camera.position.distanceTo(controlsRef.current.target);
-      controlsRef.current.zoomSpeed = Math.max(0.1, Math.log10(Math.max(distToTarget, 1)) * 0.5);
+      // 指数映射：近距离精细，远距离快速跨越
+      controlsRef.current.zoomSpeed = Math.max(0.5, Math.pow(distToTarget, 0.4) * 0.3);
     }
   });
 
@@ -113,10 +104,13 @@ export function CameraController({
     <OrbitControls
       ref={controlsRef}
       enableDamping
-      dampingFactor={0.05}
+      dampingFactor={0.08}
       minDistance={0.1}
       maxDistance={15_000_000}
-      enabled={!isFlying.current}
+      enablePan
+      enableRotate
+      enableZoom
+      enabled={!isFlying}
     />
   );
 }
