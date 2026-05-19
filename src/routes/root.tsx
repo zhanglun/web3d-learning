@@ -61,6 +61,12 @@ export default function Root() {
               <a href={'/solar-system'}>Solar System</a>
             </li>
           </ul>
+          <ul>
+            <li><a href={'/armdeck/phase1'}>ArmDeck Phase 1 — URDF Viewer</a></li>
+            <li><a href={'/armdeck/phase2'}>ArmDeck Phase 2 — IK</a></li>
+            <li><a href={'/armdeck/phase3'}>ArmDeck Phase 3 — Recording</a></li>
+            <li><a href={'/armdeck/phase4'}>ArmDeck Phase 4 — ROS2</a></li>
+          </ul>
         </nav>
       </div>
       <div id="detail">
