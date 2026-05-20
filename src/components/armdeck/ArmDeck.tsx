@@ -1,6 +1,6 @@
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Grid, ContactShadows, Environment } from '@react-three/drei';
-import { Suspense, useCallback, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import type { URDFRobot } from 'urdf-loader';
 
@@ -23,6 +23,7 @@ import { Player } from './Player';
 import { TransportPanel } from './TransportPanel';
 import { RosJointStateDriver } from './RosJointStateDriver';
 import { RosPointCloud } from './RosPointCloud';
+import { TFVisualizer } from './TFVisualizer';
 import { RosPanel } from './RosPanel';
 
 export default function ArmDeck() {
@@ -55,12 +56,15 @@ export default function ArmDeck() {
   // ROS
   const [rosJointControl, setRosJointControl] = useState(false);
   const [showPointCloud, setShowPointCloud] = useState(false);
+  const [showTF, setShowTF] = useState(false);
+
+  // Load saved trajectories on mount
+  useEffect(() => { storage.list().then(setSavedList); }, []);
 
   const handleRobotLoaded = useCallback((r: URDFRobot) => {
     setRobot(r);
     if (urlState.ikEnabled) {
-      const ik = createIK(r, robotDef.toolFrame);
-      setIkSystem(ik);
+      setIkSystem(createIK(r, robotDef.toolFrame));
     }
   }, [robotDef.toolFrame, urlState.ikEnabled]);
 
@@ -79,22 +83,11 @@ export default function ArmDeck() {
 
   const handleToggleIK = (enabled: boolean) => {
     setUrlState(s => ({ ...s, ikEnabled: enabled }));
-    if (enabled && robot) {
-      setIkSystem(createIK(robot, robotDef.toolFrame));
-    } else {
-      setIkSystem(null);
-      setIkStatus('idle');
-    }
+    if (enabled && robot) setIkSystem(createIK(robot, robotDef.toolFrame));
+    else { setIkSystem(null); setIkStatus('idle'); }
   };
 
-  const handleShare = () => {
-    navigator.clipboard.writeText(window.location.href);
-  };
-
-  const refreshList = async () => {
-    const list = await storage.list();
-    setSavedList(list);
-  };
+  const refreshList = async () => setSavedList(await storage.list());
 
   const handleSave = async (name: string) => {
     const traj: Trajectory = {
@@ -111,12 +104,22 @@ export default function ArmDeck() {
   };
 
   const playbackDuration =
-    playingTraj && playingTraj.frames.length > 0
+    playingTraj?.frames.length
       ? playingTraj.frames[playingTraj.frames.length - 1].t
       : 0;
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', background: '#111', display: 'flex', flexDirection: 'column' }}>
+
+      {/* Phase label */}
+      <div style={{
+        position: 'absolute', top: robot ? 44 : 8, right: 10, zIndex: 20,
+        background: 'rgba(120,0,180,0.75)', color: '#fff',
+        fontSize: 11, padding: '2px 8px', borderRadius: 3, pointerEvents: 'none',
+      }}>
+        Phase 4 — ROS2 + Dataset Backend
+      </div>
+
       {robot && (
         <TopBar
           robotId={robotDef.id}
@@ -125,29 +128,24 @@ export default function ArmDeck() {
           onToggleAxes={v => setUrlState(s => ({ ...s, showAxes: v }))}
           ikEnabled={urlState.ikEnabled ?? false}
           onToggleIK={handleToggleIK}
-          onShare={handleShare}
+          onShare={() => navigator.clipboard.writeText(window.location.href)}
         />
       )}
 
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden', paddingTop: robot ? 40 : 0 }}>
-        {/* Left panel */}
+
+        {/* Left — joint controls */}
         <div style={{ width: 220, background: '#1a1a2a', overflowY: 'auto', flexShrink: 0 }}>
-          {robot && (
-            <JointControls robot={robot} joints={joints} onChange={handleJointChange} />
-          )}
+          {robot && <JointControls robot={robot} joints={joints} onChange={handleJointChange} />}
         </div>
 
         {/* Canvas */}
         <div style={{ flex: 1, position: 'relative' }}>
           <Canvas camera={{ position: [1.2, 1, 1.2], fov: 45 }}>
             <ambientLight intensity={0.4} />
-            <directionalLight position={[5, 10, 5]} intensity={1} />
+            <directionalLight position={[5, 10, 5]} intensity={1} castShadow />
             <Suspense fallback={null}>
-              <URDFRobotModel
-                urdf={robotDef.urdf}
-                joints={joints}
-                onLoaded={handleRobotLoaded}
-              />
+              <URDFRobotModel urdf={robotDef.urdf} joints={joints} onLoaded={handleRobotLoaded} />
               {robot && (
                 <>
                   <EEPoseReader robot={robot} toolFrame={robotDef.toolFrame} poseRef={eePoseRef} />
@@ -162,12 +160,7 @@ export default function ArmDeck() {
                         }}
                         status={ikStatus}
                       />
-                      <IKRunner
-                        robot={robot}
-                        ikSystem={ikSystem}
-                        targetWorldPos={ikTargetWorldPos}
-                        onStatus={setIkStatus}
-                      />
+                      <IKRunner robot={robot} ikSystem={ikSystem} targetWorldPos={ikTargetWorldPos} onStatus={setIkStatus} />
                     </>
                   )}
                   <Recorder
@@ -181,7 +174,7 @@ export default function ArmDeck() {
                     <Player
                       robot={robot}
                       trajectory={playingTraj}
-                      isPlaying={!!playingTraj}
+                      isPlaying
                       speed={playbackSpeed}
                       onProgress={setPlaybackTime}
                       onEnd={() => setPlayingTraj(null)}
@@ -191,7 +184,8 @@ export default function ArmDeck() {
                 </>
               )}
               <RosPointCloud visible={showPointCloud} />
-              <Grid args={[10, 10]} position={[0, 0, 0]} />
+              <TFVisualizer visible={showTF} />
+              <Grid args={[10, 10]} />
               <ContactShadows opacity={0.3} />
               <Environment preset="city" />
             </Suspense>
@@ -200,8 +194,8 @@ export default function ArmDeck() {
           {robot && <EEPosePanel poseRef={eePoseRef} />}
         </div>
 
-        {/* Right panel */}
-        <div style={{ width: 200, background: '#1a1a2a', overflowY: 'auto', flexShrink: 0 }}>
+        {/* Right — transport + ROS */}
+        <div style={{ width: 210, background: '#1a1a2a', overflowY: 'auto', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
           <TransportPanel
             frameCount={frameCount}
             isRecording={isRecording}
@@ -220,12 +214,14 @@ export default function ArmDeck() {
             onRefreshList={refreshList}
             onDelete={async id => { await storage.remove(id); refreshList(); }}
           />
-          <div style={{ borderTop: '1px solid #333' }}>
+          <div style={{ borderTop: '1px solid #2a2a3a' }}>
             <RosPanel
               showPointCloud={showPointCloud}
               onTogglePointCloud={setShowPointCloud}
               rosJointControl={rosJointControl}
               onToggleRosJoints={setRosJointControl}
+              showTF={showTF}
+              onToggleTF={setShowTF}
             />
           </div>
         </div>
