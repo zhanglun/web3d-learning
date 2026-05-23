@@ -11,6 +11,7 @@ import { GLTF } from "./routes/gltf";
 import { CircularArc } from "./routes/CircularArc";
 import Kid from "./routes/kid";
 import SolarSystemRoute from "./routes/solar-system";
+import RobotRoute from './routes/robot';
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,7 @@ const router = createBrowserRouter([
       { path: "/circular-arc", element: <CircularArc /> },
       { path: "/kid", element: <Kid /> },
       { path: "/solar-system", element: <SolarSystemRoute /> },
+      { path: "/robot", element: <RobotRoute /> },
     ],
   },
 ]);

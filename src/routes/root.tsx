@@ -61,6 +61,11 @@ export default function Root() {
               <a href={'/solar-system'}>Solar System</a>
             </li>
           </ul>
+          <ul>
+            <li>
+              <a href={'/robot'}>Robot</a>
+            </li>
+          </ul>
         </nav>
       </div>
       <div id="detail">
