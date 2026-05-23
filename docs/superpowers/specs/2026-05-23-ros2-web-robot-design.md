@@ -170,7 +170,35 @@ src/
 
 ---
 
-## 依赖
+## 环境准备（macOS）
+
+ROS2 原生 macOS 安装复杂，使用 Docker 运行 ROS2 + Gazebo（无头模式）。可视化在浏览器完成，无需 Gazebo GUI。
+
+```bash
+# 安装 Docker Desktop（或 brew install --cask docker）
+# Apple Silicon
+docker pull --platform linux/arm64 osrf/ros:humble-desktop
+# Intel Mac
+docker pull osrf/ros:humble-desktop
+```
+
+启动容器时暴露 rosbridge 端口：
+
+```bash
+docker run -it --rm -p 9090:9090 osrf/ros:humble-desktop
+```
+
+容器内需安装：
+```bash
+apt-get install -y ros-humble-turtlebot3* ros-humble-gazebo-* \
+  ros-humble-rosbridge-suite
+```
+
+Web 应用连接地址：`ws://localhost:9090`
+
+---
+
+## 前端依赖
 
 ```bash
 pnpm add roslib zustand
