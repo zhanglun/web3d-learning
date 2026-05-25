@@ -8,6 +8,7 @@ import { AnnotationBox3D } from '../components/annotator/AnnotationBox3D'
 import { useAnnotatorStore } from '../components/annotator/annotatorStore'
 import { BevView } from '../components/annotator/BevView'
 import { BevOverlay } from '../components/annotator/BevOverlay'
+import { BoxList } from '../components/annotator/BoxList'
 
 export default function AnnotatorRoute() {
   const perspRef = useRef<HTMLDivElement>(null!)
@@ -36,6 +37,9 @@ export default function AnnotatorRoute() {
           <BevOverlay containerRef={bevRef} cameraRef={bevCameraRef} />
         </div>
       </div>
+
+      {/* Box list */}
+      <BoxList />
 
       {/* Full-page Canvas — pointer-events off, events delegated via eventSource */}
       <Canvas
