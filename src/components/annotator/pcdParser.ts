@@ -2,6 +2,8 @@
 export function parsePCD(buffer: ArrayBuffer): Float32Array {
   const bytes = new Uint8Array(buffer)
 
+  const decoder = new TextDecoder()
+
   // Scan header line-by-line until DATA line
   const headerLines: string[] = []
   let pos = 0
@@ -10,7 +12,7 @@ export function parsePCD(buffer: ArrayBuffer): Float32Array {
   while (pos < bytes.length) {
     let end = pos
     while (end < bytes.length && bytes[end] !== 10) end++ // find \n
-    const line = new TextDecoder().decode(bytes.slice(pos, end)).replace(/\r$/, '').trim()
+    const line = decoder.decode(bytes.slice(pos, end)).replace(/\r$/, '').trim()
     pos = end + 1
     headerLines.push(line)
     if (line.startsWith('DATA')) { dataOffset = pos; break }
@@ -21,6 +23,7 @@ export function parsePCD(buffer: ArrayBuffer): Float32Array {
 
   const fields = get('FIELDS ').split(/\s+/)
   const sizes  = get('SIZE ').split(/\s+/).map(Number)
+  const types  = get('TYPE ').split(/\s+/)
   const points = parseInt(get('POINTS ') || '0', 10)
   const dataType = get('DATA ').split(/\s+/)[0]
 
@@ -28,6 +31,9 @@ export function parsePCD(buffer: ArrayBuffer): Float32Array {
   const yIdx = fields.indexOf('y')
   const zIdx = fields.indexOf('z')
   if (xIdx < 0 || yIdx < 0 || zIdx < 0) throw new Error('PCD missing x/y/z fields')
+
+  if (dataType === 'binary' && [xIdx, yIdx, zIdx].some((i) => types[i] !== 'F'))
+    throw new Error('PCD parser only supports TYPE F (float32) for x/y/z in binary mode')
 
   if (dataType === 'ascii') {
     const text = new TextDecoder().decode(bytes.slice(dataOffset))
