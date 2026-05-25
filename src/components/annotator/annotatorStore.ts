@@ -23,9 +23,9 @@ export const useAnnotatorStore = create<AnnotatorStore>((set) => ({
   loadSample: () => {
     // Populated in Task 3 when sampleData.ts exists.
     // Import is deferred to avoid circular dependency at test time.
-    import('./sampleData').then(({ generateSampleData }) => {
-      set({ pointCloud: generateSampleData() })
-    })
+    import('./sampleData')
+      .then(({ generateSampleData }) => set({ pointCloud: generateSampleData() }))
+      .catch((err) => console.error('[annotatorStore] loadSample failed:', err))
   },
 
   addBox: (box) =>
