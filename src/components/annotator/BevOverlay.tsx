@@ -3,7 +3,6 @@ import * as THREE from 'three'
 import { useAnnotatorStore } from './annotatorStore'
 
 interface Props {
-  containerRef: React.RefObject<HTMLDivElement | null>
   cameraRef: React.RefObject<THREE.OrthographicCamera | null>
 }
 
@@ -28,7 +27,7 @@ function pixelToWorld(
   return [v.x, v.z]
 }
 
-export function BevOverlay({ containerRef, cameraRef }: Props) {
+export function BevOverlay({ cameraRef }: Props) {
   const canvasRef   = useRef<HTMLCanvasElement>(null!)
   const dragging    = useRef(false)
   const startClient = useRef<[number, number]>([0, 0])

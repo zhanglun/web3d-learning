@@ -30,7 +30,7 @@ export default function AnnotatorRoute() {
       <div style={{ flex: 1, display: 'flex', gap: 8, minHeight: 0 }}>
         <div ref={perspRef} style={{ flex: 1, borderRadius: 8, overflow: 'hidden' }} />
         <div ref={bevRef}   style={{ flex: 1, borderRadius: 8, overflow: 'hidden', position: 'relative' }}>
-          <BevOverlay containerRef={bevRef} cameraRef={bevCameraRef} />
+          <BevOverlay cameraRef={bevCameraRef} />
         </div>
       </div>
 
