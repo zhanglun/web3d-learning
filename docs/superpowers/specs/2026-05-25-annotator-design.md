@@ -126,14 +126,18 @@ BEV uses OrthographicCamera looking straight down (position `[0, 20, 0]`, lookAt
 Draw-box flow:
 1. `pointerdown` on overlay → record start pixel `(px0, py0)`
 2. `pointermove` → draw dashed rectangle on Canvas 2D context
-3. `pointerup` → convert two corner pixels to world XZ:
+3. `pointerup` → convert two corner pixels to world XZ using proper unprojection:
+   ```ts
+   function pixelToWorld(px, py, overlayEl, camera): [number, number] {
+     const rect = overlayEl.getBoundingClientRect()
+     const ndcX = ((px - rect.left) / rect.width) * 2 - 1
+     const ndcY = -((py - rect.top) / rect.height) * 2 + 1
+     const vec = new THREE.Vector3(ndcX, ndcY, 0).unproject(camera)
+     return [vec.x, vec.z]  // BEV camera looks down Y, so world Z = vec.z
+   }
    ```
-   ndcX = (px / width) * 2 - 1
-   ndcZ = -(py / height) * 2 + 1
-   worldX = ndcX * frustumHalfWidth   (frustumHalfWidth = ortho camera right)
-   worldZ = ndcZ * frustumHalfHeight
-   ```
-4. Compute center and size from the two corners
+   Using `unproject` correctly handles any camera zoom or pan state.
+4. Compute center and size from the two world corners
 5. Call `addBox({ position: [cx, yCenter, cz], size: [w, 2.0, d], rotation: 0, label: '' })`
 
 `yCenter` is estimated as the median Y of the loaded point cloud.
