@@ -66,6 +66,11 @@ export default function Root() {
               <a href={'/robot'}>Robot</a>
             </li>
           </ul>
+          <ul>
+            <li>
+              <a href={'/annotator'}>Annotator</a>
+            </li>
+          </ul>
         </nav>
       </div>
       <div id="detail">

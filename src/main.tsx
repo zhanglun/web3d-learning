@@ -12,6 +12,7 @@ import { CircularArc } from "./routes/CircularArc";
 import Kid from "./routes/kid";
 import SolarSystemRoute from "./routes/solar-system";
 import RobotRoute from './routes/robot';
+import AnnotatorRoute from './routes/annotator';
 
 const router = createBrowserRouter([
   {
@@ -28,6 +29,7 @@ const router = createBrowserRouter([
       { path: "/kid", element: <Kid /> },
       { path: "/solar-system", element: <SolarSystemRoute /> },
       { path: "/robot", element: <RobotRoute /> },
+      { path: "/annotator", element: <AnnotatorRoute /> },
     ],
   },
 ]);
