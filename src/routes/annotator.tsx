@@ -9,13 +9,13 @@ import { useAnnotatorStore } from '../components/annotator/annotatorStore'
 import { BevView } from '../components/annotator/BevView'
 import { BevOverlay } from '../components/annotator/BevOverlay'
 import { BoxList } from '../components/annotator/BoxList'
+import { Toolbar } from '../components/annotator/Toolbar'
 
 export default function AnnotatorRoute() {
   const perspRef = useRef<HTMLDivElement>(null!)
   const bevRef   = useRef<HTMLDivElement>(null!)
   const bevCameraRef = useRef<THREE.OrthographicCamera | null>(null)
 
-  const loadSample = useAnnotatorStore((s) => s.loadSample)
   const orbitRef = useRef<any>(null)
   const boxes    = useAnnotatorStore((s) => s.boxes)
   const selectBox = useAnnotatorStore((s) => s.selectBox)
@@ -24,11 +24,7 @@ export default function AnnotatorRoute() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%',
                   background: '#0d0d1a', gap: 8, padding: 8, boxSizing: 'border-box' }}>
 
-      {/* Temporary load button until Toolbar is built */}
-      <div style={{ color: '#fff', fontSize: 12 }}>
-        <button onClick={() => loadSample()} style={{ marginRight: 8 }}>Load Sample</button>
-        Annotator
-      </div>
+      <Toolbar />
 
       {/* Viewport row */}
       <div style={{ flex: 1, display: 'flex', gap: 8, minHeight: 0 }}>
