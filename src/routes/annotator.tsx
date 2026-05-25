@@ -3,6 +3,7 @@ import { useRef } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { View, OrbitControls, PerspectiveCamera, Grid } from '@react-three/drei'
 import { PointCloud } from '../components/annotator/PointCloud'
+import { AnnotationBox3D } from '../components/annotator/AnnotationBox3D'
 import { useAnnotatorStore } from '../components/annotator/annotatorStore'
 
 export default function AnnotatorRoute() {
@@ -10,6 +11,9 @@ export default function AnnotatorRoute() {
   const bevRef   = useRef<HTMLDivElement>(null!)
 
   const loadSample = useAnnotatorStore((s) => s.loadSample)
+  const orbitRef = useRef<any>(null)
+  const boxes    = useAnnotatorStore((s) => s.boxes)
+  const selectBox = useAnnotatorStore((s) => s.selectBox)
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%',
@@ -38,15 +42,34 @@ export default function AnnotatorRoute() {
           <PerspectiveCamera makeDefault position={[0, 6, 10]} fov={60} />
           <ambientLight intensity={0.6} />
           <directionalLight position={[5, 8, 5]} intensity={1} />
-          <OrbitControls makeDefault />
+          <OrbitControls ref={orbitRef} makeDefault />
           <Grid args={[20, 20] as [number, number]} cellSize={0.5} cellColor="#1e1e3a"
                 sectionSize={2} sectionColor="#333366" fadeDistance={20} />
           <PointCloud />
+          <mesh
+            visible={false}
+            scale={[100, 1, 100]}
+            position={[0, -0.1, 0]}
+            onClick={() => selectBox(null)}
+          >
+            <planeGeometry />
+          </mesh>
+          {boxes.map((box) => (
+            <AnnotationBox3D
+              key={box.id}
+              box={box}
+              showTransformControls
+              orbitRef={orbitRef}
+            />
+          ))}
         </View>
 
         <View track={bevRef}>
           <ambientLight intensity={1} />
           <PointCloud />
+          {boxes.map((box) => (
+            <AnnotationBox3D key={box.id} box={box} />
+          ))}
         </View>
       </Canvas>
     </div>
