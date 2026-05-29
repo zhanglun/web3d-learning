@@ -9,9 +9,12 @@ interface Props {
 }
 
 const AXIS_SIZE = 0.08;
+// ROS uses Z-up; Three.js uses Y-up. R_x(-PI/2) maps ROS→Three.js.
+const ROS_TO_THREEJS = new THREE.Euler(-Math.PI / 2, 0, 0);
 
 export function TFVisualizer({ visible }: Props) {
-  const msgRef = useRosTopicRef<TFMessage>('/tf');
+  const tfRef = useRosTopicRef<TFMessage>('/tf');
+  const tfStaticRef = useRosTopicRef<TFMessage>('/tf_static');
   const groupRef = useRef<THREE.Group>(null);
   const helpersRef = useRef<Map<string, THREE.AxesHelper>>(new Map());
 
@@ -24,10 +27,14 @@ export function TFVisualizer({ visible }: Props) {
 
   useFrame(() => {
     if (!visible || !groupRef.current) return;
-    const msg = msgRef.current;
-    if (!msg?.transforms) return;
 
-    msg.transforms.forEach(tf => {
+    const allTransforms = [
+      ...(tfRef.current?.transforms ?? []),
+      ...(tfStaticRef.current?.transforms ?? []),
+    ];
+    if (allTransforms.length === 0) return;
+
+    allTransforms.forEach(tf => {
       const id = tf.child_frame_id;
       let helper = helpersRef.current.get(id);
       if (!helper) {
@@ -44,5 +51,6 @@ export function TFVisualizer({ visible }: Props) {
     });
   });
 
-  return <group ref={groupRef} visible={visible} />;
+  // group rotation converts ROS Z-up space → Three.js Y-up
+  return <group ref={groupRef} visible={visible} rotation={ROS_TO_THREEJS} />;
 }

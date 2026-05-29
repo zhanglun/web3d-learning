@@ -10,6 +10,8 @@ import { createIK } from '../../ik/solver';
 import type { IKSystem } from '../../ik/solver';
 import type { Trajectory, TrajectoryFrame } from '../../recording/trajectory';
 import * as storage from '../../recording/index';
+import { rosBridge } from '../../ros/bridge';
+import { encodeJointState } from '../../ros/cdr';
 
 import { TopBar } from './TopBar';
 import { URDFRobotModel } from './URDFRobotModel';
@@ -57,6 +59,7 @@ export default function ArmDeck() {
   const [rosJointControl, setRosJointControl] = useState(false);
   const [showPointCloud, setShowPointCloud] = useState(false);
   const [showTF, setShowTF] = useState(false);
+  const rosJointCmdChannel = useRef<number | null>(null);
 
   // Load saved trajectories on mount
   useEffect(() => { storage.list().then(setSavedList); }, []);
@@ -107,6 +110,24 @@ export default function ArmDeck() {
     playingTraj?.frames.length
       ? playingTraj.frames[playingTraj.frames.length - 1].t
       : 0;
+
+  const handlePlaybackJointFrame = useCallback((joints: Record<string, number>) => {
+    if (rosBridge.status !== 'connected') return;
+    if (rosJointCmdChannel.current == null) {
+      rosJointCmdChannel.current = rosBridge.advertise(
+        '/joint_command',
+        'sensor_msgs/JointState',
+        'cdr',
+      );
+    }
+    const msg = encodeJointState({
+      name: Object.keys(joints),
+      position: Object.values(joints),
+      velocity: [],
+      effort: [],
+    });
+    rosBridge.publish(rosJointCmdChannel.current, msg);
+  }, []);
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', background: '#111', display: 'flex', flexDirection: 'column' }}>
@@ -178,12 +199,16 @@ export default function ArmDeck() {
                       speed={playbackSpeed}
                       onProgress={setPlaybackTime}
                       onEnd={() => setPlayingTraj(null)}
+                      onJointFrame={handlePlaybackJointFrame}
                     />
                   )}
                   <RosJointStateDriver robot={robot} enabled={rosJointControl} />
                 </>
               )}
-              <RosPointCloud visible={showPointCloud} />
+              {/* Wrap in ROS→Three.js coordinate transform (Z-up → Y-up) */}
+              <group rotation={[-Math.PI / 2, 0, 0]}>
+                <RosPointCloud visible={showPointCloud} />
+              </group>
               <TFVisualizer visible={showTF} />
               <Grid args={[10, 10]} />
               <ContactShadows opacity={0.3} />

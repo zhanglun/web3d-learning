@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Trajectory } from '../../recording/trajectory';
 import { exportLeRobot } from '../../recording/trajectory';
+import { useBackendStatus } from '../../recording/useBackendStatus';
 
 type PanelState = 'idle' | 'recording' | 'reviewing' | 'playback';
 
@@ -43,6 +44,7 @@ export function TransportPanel({
 }: Props) {
   const [saveName, setSaveName] = useState('take-1');
   const [saving, setSaving] = useState(false);
+  const backendStatus = useBackendStatus();
 
   const panel: PanelState = isPlaying
     ? 'playback'
@@ -61,7 +63,17 @@ export function TransportPanel({
 
   return (
     <div style={{ padding: 10, color: '#ccc', fontSize: 12 }}>
-      <h3 style={{ margin: '0 0 8px', fontSize: 13 }}>Transport</h3>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+        <h3 style={{ margin: 0, fontSize: 13 }}>Transport</h3>
+        <span style={{
+          fontSize: 10, padding: '1px 5px', borderRadius: 2,
+          background: backendStatus === 'remote' ? '#1a3a1a' : backendStatus === 'checking' ? '#222' : '#2a2a2a',
+          color: backendStatus === 'remote' ? '#6f6' : backendStatus === 'checking' ? '#666' : '#888',
+          border: `1px solid ${backendStatus === 'remote' ? '#2a5a2a' : '#333'}`,
+        }}>
+          {backendStatus === 'checking' ? '…' : backendStatus === 'remote' ? 'Remote' : 'Local'}
+        </span>
+      </div>
 
       {panel === 'idle' && (
         <>

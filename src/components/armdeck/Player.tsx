@@ -10,9 +10,10 @@ interface Props {
   speed: number;
   onProgress: (t: number) => void;
   onEnd: () => void;
+  onJointFrame?: (joints: Record<string, number>) => void;
 }
 
-export function Player({ robot, trajectory, isPlaying, speed, onProgress, onEnd }: Props) {
+export function Player({ robot, trajectory, isPlaying, speed, onProgress, onEnd, onJointFrame }: Props) {
   const playbackTime = useRef(0);
   const lastFrameIdx = useRef(0);
 
@@ -41,12 +42,15 @@ export function Player({ robot, trajectory, isPlaying, speed, onProgress, onEnd 
     const alpha = b.t === a.t ? 0 : (playbackTime.current - a.t) / (b.t - a.t);
 
     // Interpolate and apply joints
+    const interpolated: Record<string, number> = {};
     Object.keys(a.joints).forEach(name => {
       const va = a.joints[name];
       const vb = b.joints[name] ?? va;
-      robot.setJointValue(name, va + (vb - va) * alpha);
+      interpolated[name] = va + (vb - va) * alpha;
+      robot.setJointValue(name, interpolated[name]);
     });
 
+    onJointFrame?.(interpolated);
     onProgress(playbackTime.current);
   });
 
