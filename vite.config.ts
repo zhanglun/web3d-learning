@@ -19,6 +19,11 @@ function threeCompatShim(): Plugin {
 
 export default defineConfig({
   plugins: [threeCompatShim(), react()],
+  optimizeDeps: {
+    // closed-chain-ik uses removed Three.js APIs; exclude it from pre-bundling
+    // so threeCompatShim can rewrite the imports before rolldown resolves them.
+    exclude: ['closed-chain-ik'],
+  },
   server: {
     proxy: {
       '/api': 'http://localhost:8787',
