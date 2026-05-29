@@ -20,9 +20,12 @@ function threeCompatShim(): Plugin {
 export default defineConfig({
   plugins: [threeCompatShim(), react()],
   optimizeDeps: {
-    // closed-chain-ik uses removed Three.js APIs; exclude it from pre-bundling
+    // closed-chain-ik uses removed Three.js APIs; exclude from pre-bundling
     // so threeCompatShim can rewrite the imports before rolldown resolves them.
     exclude: ['closed-chain-ik'],
+    // svd-js ships as UMD with no ESM named exports; pre-bundle it so Vite
+    // converts it to ESM before closed-chain-ik tries to import { SVD } from it.
+    include: ['svd-js'],
   },
   server: {
     proxy: {
