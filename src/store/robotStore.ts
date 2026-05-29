@@ -1,9 +1,9 @@
 import { create } from 'zustand'
-import ROSLIB from 'roslib'
+import { Ros } from 'roslib'
 import type { OdometryMessage, LaserScanMessage } from '../components/robot/types'
 
 interface RobotStore {
-  ros: ROSLIB.Ros | null
+  ros: Ros | null
   connected: boolean
   odom: OdometryMessage | null
   scan: LaserScanMessage | null
@@ -26,7 +26,7 @@ export const useRobotStore = create<RobotStore>((set, get) => ({
   maxAngularSpeed: 1.0,
 
   connect: (url: string) => {
-    const ros = new ROSLIB.Ros({ url })
+    const ros = new Ros({ url })
     ros.on('connection', () => set({ connected: true }))
     ros.on('error', () => set({ connected: false }))
     ros.on('close', () => set({ connected: false, ros: null }))
