@@ -90,6 +90,7 @@ export function BevOverlay({ cameraRef }: Props) {
       if (width < 0.2 || depth < 0.2) return   // too small, ignore
 
       const yc = getYCenter(pointCloud)
+      // +0.75 = half the default box height (1.5m) so the bottom sits on the median ground point
       addBox({
         position: [(wx0 + wx1) / 2, yc + 0.75, (wz0 + wz1) / 2],
         size: [width, depth, 1.5],
