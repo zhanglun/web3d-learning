@@ -110,6 +110,7 @@ export default function Vector() {
   useEffect(() => {
     const stats = new Stats();
     //stats.domElement:web页面上输出计算结果,一个div元素，
+    stats.domElement.style.top = '44px'; // keep clear of the DemoFrame top bar
     document.body.appendChild(stats.domElement);
 
     const camera = createCamera();
@@ -124,13 +125,14 @@ export default function Vector() {
       renderer.render(scene, camera); //执行渲染操作
     }); //监听鼠标、键盘事件
 
+    let rafId = 0;
     function render() {
       stats.update();
       renderer.render(scene, camera); //执行渲染操作
       group.rotateX(0.01);
       group.rotateY(0.01);
       group.rotateZ(0.01);
-      requestAnimationFrame(render); //请求再次执行渲染函数render，渲染下一帧
+      rafId = requestAnimationFrame(render); //请求再次执行渲染函数render，渲染下一帧
     }
 
     render();
@@ -144,6 +146,16 @@ export default function Vector() {
       // 但是不会每渲染一帧，就通过相机的属性计算投影矩阵(节约计算资源)
       // 如果相机的一些属性发生了变化，需要执行updateProjectionMatrix ()方法更新相机的投影矩阵
       camera.updateProjectionMatrix();
+    };
+
+    // Tear down body-appended widgets and the render loop on unmount,
+    // otherwise the Stats panel lingers after navigating back.
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.onresize = null;
+      stats.domElement.remove();
+      controls.dispose();
+      renderer.dispose();
     };
   }, []);
 

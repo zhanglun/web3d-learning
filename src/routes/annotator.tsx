@@ -39,7 +39,7 @@ export default function AnnotatorRoute() {
 
       {/* Full-page Canvas — pointer-events off, events delegated via eventSource */}
       <Canvas
-        style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%',
                  pointerEvents: 'none' }}
         eventSource={document.getElementById('root') as HTMLElement}
         gl={{ alpha: true }}

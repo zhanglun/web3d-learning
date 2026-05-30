@@ -48,8 +48,15 @@ export function GLTF() {
     //新版本，加载gltf，不需要执行下面代码解决颜色偏差
     renderer.outputColorSpace = THREE.SRGBColorSpace;//设置为SRGB颜色空间
 
-    createOrbitControlsAndBindEvent(renderer, scene, camera);
-    initRenderAndResize(stats, renderer, scene, camera);
+    const controls = createOrbitControlsAndBindEvent(renderer, scene, camera);
+    const stop = initRenderAndResize(stats, renderer, scene, camera);
+
+    return () => {
+      stop();
+      stats.domElement.remove();
+      controls?.dispose();
+      renderer.dispose();
+    };
   }, [])
 
   return <div id="webgl"></div>;

@@ -1,6 +1,7 @@
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Root from "./routes/root";
+import Home from "./routes/home";
 import ErrorPage from "./error-page";
 import Basic from "./routes/basic";
 import "./index.css";
@@ -25,6 +26,7 @@ const router = createBrowserRouter([
     element: <Root />,
     errorElement: <ErrorPage />,
     children: [
+      { index: true, element: <Home /> },
       { path: "/basic", element: <Basic /> },
       { path: "/geometry", element: <Geometry /> },
       { path: "/vector", element: <Vector /> },

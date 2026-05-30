@@ -47,22 +47,28 @@ export function createOrbitControlsAndBindEvent(renderer, scene, camera) {
   controls.addEventListener("change", function () {
     renderer.render(scene, camera);
   })
+  return controls;
 }
 
 
 export function injectStats() {
   const stats = new Stats();
   //stats.domElement:web页面上输出计算结果,一个div元素，
+  stats.domElement.style.top = '44px'; // keep clear of the DemoFrame top bar
   document.body.appendChild(stats.domElement);
 
   return stats;
 }
 
+// Returns a disposer that stops the render loop and unbinds resize.
+// Callers MUST run it on unmount, otherwise the loop and Stats panel
+// keep running/showing after navigating away.
 export function initRenderAndResize (stats, renderer, scene, camera) {
+  let rafId = 0;
   function render() {
     stats.update();
     renderer.render(scene, camera); //执行渲染操作
-    requestAnimationFrame(render); //请求再次执行渲染函数render，渲染下一帧
+    rafId = requestAnimationFrame(render); //请求再次执行渲染函数render，渲染下一帧
   }
 
   render();
@@ -76,5 +82,10 @@ export function initRenderAndResize (stats, renderer, scene, camera) {
     // 但是不会每渲染一帧，就通过相机的属性计算投影矩阵(节约计算资源)
     // 如果相机的一些属性发生了变化，需要执行updateProjectionMatrix ()方法更新相机的投影矩阵
     camera.updateProjectionMatrix();
+  };
+
+  return () => {
+    cancelAnimationFrame(rafId);
+    window.onresize = null;
   };
 }

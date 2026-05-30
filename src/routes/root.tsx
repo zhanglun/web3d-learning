@@ -1,87 +1,67 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, Link, useLocation, useMatch } from 'react-router-dom'
+import { ThemeToggle } from '../components/ThemeToggle'
+
+const ROUTE_NAMES: Record<string, string> = {
+  '/basic': 'Basic',
+  '/geometry': 'Geometry',
+  '/vector': 'Vector',
+  '/texture': 'Texture',
+  '/gltf': 'GLTF',
+  '/circular-arc': 'Circular Arc',
+  '/kid': 'Kid',
+  '/solar-system': 'Solar System',
+  '/robot': 'Robot Demo',
+  '/annotator': 'Point Cloud Annotator',
+  '/armdeck': 'ArmDeck',
+  '/armdeck/phase1': 'ArmDeck — Phase 1',
+  '/armdeck/phase2': 'ArmDeck — Phase 2',
+  '/armdeck/phase3': 'ArmDeck — Phase 3',
+  '/armdeck/phase4': 'ArmDeck — Phase 4',
+}
 
 export default function Root() {
+  const isHome = useMatch({ path: '/', end: true })
+  const { pathname } = useLocation()
+
+  if (isHome) {
+    return <Outlet />
+  }
+
+  const demoName = ROUTE_NAMES[pathname] ?? ''
+
   return (
-    <>
-      <div id="sidebar">
-        <h1>React Router Contacts</h1>
-        <div>
-          <form id="search-form" role="search">
-            <input
-              id="q"
-              aria-label="Search contacts"
-              placeholder="Search"
-              type="search"
-              name="q"
-            />
-            <div
-              id="search-spinner"
-              aria-hidden
-              hidden={true}
-            />
-            <div
-              className="sr-only"
-              aria-live="polite"
-            ></div>
-          </form>
-          {/* <form method="post">
-            <button type="submit">New</button>
-          </form> */}
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: 'var(--bg)' }}>
+      <div style={{
+        height: 40,
+        display: 'flex',
+        alignItems: 'center',
+        padding: '0 12px 0 16px',
+        gap: 10,
+        background: 'var(--surface)',
+        borderBottom: '1px solid var(--border)',
+        flexShrink: 0,
+        position: 'relative',
+        zIndex: 10,
+      }}>
+        <Link
+          to="/"
+          style={{ color: 'var(--accent)', textDecoration: 'none', fontSize: 13 }}
+        >
+          ← Home
+        </Link>
+        {demoName && (
+          <>
+            <span style={{ color: 'var(--border-strong)', fontSize: 12, userSelect: 'none' }}>·</span>
+            <span style={{ color: 'var(--text-3)', fontSize: 13 }}>{demoName}</span>
+          </>
+        )}
+        <div style={{ marginLeft: 'auto' }}>
+          <ThemeToggle size={28} />
         </div>
-        <nav>
-          <ul>
-            <li>
-              <a href={`/basic`}>Basic</a>
-            </li>
-            <li>
-              <a href={`/geometry`}>Geometry</a>
-            </li>
-            <li>
-              <a href={`/vector`}>Vector</a>
-            </li>
-            <li>
-              <a href={`/texture`}>Texture</a>
-            </li>
-            <li>
-              <a href={`/gltf`}>Gltf</a>
-            </li>
-          </ul>
-          <ul>
-            <li>
-              <a href={'/circular-arc'}>Circular Arc</a>
-            </li>
-          </ul>
-          <ul>
-            <li>
-              <a href={'/kid'}>Kid</a>
-            </li>
-          </ul>
-          <ul>
-            <li>
-              <a href={'/solar-system'}>Solar System</a>
-            </li>
-          </ul>
-          <ul>
-            <li>
-              <a href={'/robot'}>Robot</a>
-            </li>
-          </ul>
-          <ul>
-            <li>
-              <a href={'/annotator'}>Annotator</a>
-            </li>
-          </ul>
-          <ul>
-            <li><a href={'/armdeck/phase1'}>ArmDeck Phase 1 — URDF Viewer</a></li>
-            <li><a href={'/armdeck/phase2'}>ArmDeck Phase 2 — IK</a></li>
-            <li><a href={'/armdeck/phase3'}>ArmDeck Phase 3 — Recording</a></li>
-            <li><a href={'/armdeck/phase4'}>ArmDeck Phase 4 — ROS2</a></li>
-          </ul>
-        </nav>
       </div>
-      <div id="detail">
+      <div id="detail" style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
         <Outlet />
       </div>
-    </>
-  );
+    </div>
+  )
 }
