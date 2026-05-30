@@ -5,6 +5,7 @@ import { useFrame } from '@react-three/fiber';
 import { useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 import type { MoonData } from './types';
+import { assetUrl } from '../../assetUrl';
 
 interface MoonProps {
   data: MoonData;
@@ -14,7 +15,7 @@ interface MoonProps {
 export function Moon({ data, speedMultiplier }: MoonProps) {
   const groupRef = useRef<THREE.Group>(null);
   const meshRef = useRef<THREE.Mesh>(null);
-  const texture = useTexture(data.textureUrl);
+  const texture = useTexture(assetUrl(data.textureUrl));
 
   useFrame((_, delta) => {
     // 公转

@@ -5,10 +5,11 @@ import { useFrame } from '@react-three/fiber';
 import { useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 import { SUN } from './constants';
+import { assetUrl } from '../../assetUrl';
 
 export function Sun() {
   const meshRef = useRef<THREE.Mesh>(null);
-  const texture = useTexture(SUN.textureUrl);
+  const texture = useTexture(assetUrl(SUN.textureUrl));
 
   // 自转动画
   useFrame((_, delta) => {

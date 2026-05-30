@@ -1,3 +1,5 @@
+import { assetUrl } from './assetUrl';
+
 export interface RobotDef {
   id: string;
   name: string;
@@ -11,7 +13,7 @@ export const ROBOTS: RobotDef[] = [
   {
     id: 'ur5e',
     name: 'UR5e',
-    urdf: '/urdf/ur5e/ur5e.urdf',
+    urdf: assetUrl('/urdf/ur5e/ur5e.urdf'),
     toolFrame: 'tool0',
     defaultJoints: {
       shoulder_pan_joint: 0,

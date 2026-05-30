@@ -44,7 +44,10 @@ const router = createBrowserRouter([
       { path: "/armdeck/phase4", element: <ArmDeckPhase4Route /> },
     ],
   },
-]);
+], {
+  // Serve correctly both at the dev root and under the GitHub Pages subpath.
+  basename: import.meta.env.BASE_URL.replace(/\/$/, "") || "/",
+});
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <RouterProvider router={router} />

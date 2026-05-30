@@ -5,6 +5,7 @@ import { useFrame } from '@react-three/fiber';
 import { useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 import type { PlanetData } from './types';
+import { assetUrl } from '../../assetUrl';
 import { Moon } from './Moon';
 import { PlanetMarker } from './PlanetMarker';
 import { PlanetLabel } from './PlanetLabel';
@@ -36,7 +37,7 @@ export function Planet({
   const orbitGroupRef = useRef<THREE.Group>(null);
   const meshRef = useRef<THREE.Mesh>(null);
   const [hovered, setHovered] = useState(false);
-  const texture = useTexture(data.textureUrl);
+  const texture = useTexture(assetUrl(data.textureUrl));
 
   // 获取行星在世界空间中的当前位置（用于 PlanetMarker）
   const worldPosition = useRef(new THREE.Vector3());
@@ -101,7 +102,7 @@ export function Planet({
                 64
               ]} />
               <meshStandardMaterial
-                map={useTexture(data.ringTextureUrl)}
+                map={useTexture(assetUrl(data.ringTextureUrl))}
                 side={THREE.DoubleSide}
                 transparent
                 opacity={0.8}
