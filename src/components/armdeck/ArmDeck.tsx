@@ -46,7 +46,6 @@ export default function ArmDeck() {
   const [ikSystem, setIkSystem] = useState<IKSystem | null>(null);
   const [ikStatus, setIkStatus] = useState<'idle' | 'ok' | 'fail'>('idle');
 
-  // Recording
   const [isRecording, setIsRecording] = useState(false);
   const framesRef = useRef<TrajectoryFrame[]>([]);
   const [frameCount, setFrameCount] = useState(0);
@@ -55,13 +54,11 @@ export default function ArmDeck() {
   const [playbackTime, setPlaybackTime] = useState(0);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
 
-  // ROS
   const [rosJointControl, setRosJointControl] = useState(false);
   const [showPointCloud, setShowPointCloud] = useState(false);
   const [showTF, setShowTF] = useState(false);
   const rosJointCmdChannel = useRef<number | null>(null);
 
-  // Load saved trajectories on mount
   useEffect(() => { storage.list().then(setSavedList); }, []);
 
   const handleRobotLoaded = useCallback((r: URDFRobot) => {
@@ -132,15 +129,6 @@ export default function ArmDeck() {
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', background: '#111', display: 'flex', flexDirection: 'column' }}>
 
-      {/* Phase label */}
-      <div style={{
-        position: 'absolute', top: robot ? 44 : 8, right: 10, zIndex: 20,
-        background: 'rgba(120,0,180,0.75)', color: '#fff',
-        fontSize: 11, padding: '2px 8px', borderRadius: 3, pointerEvents: 'none',
-      }}>
-        Phase 4 — ROS2 + Dataset Backend
-      </div>
-
       {robot && (
         <TopBar
           robotId={robotDef.id}
@@ -155,12 +143,10 @@ export default function ArmDeck() {
 
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden', paddingTop: robot ? 40 : 0 }}>
 
-        {/* Left — joint controls */}
         <div style={{ width: 220, background: '#1a1a2a', overflowY: 'auto', flexShrink: 0 }}>
           {robot && <JointControls robot={robot} joints={joints} onChange={handleJointChange} />}
         </div>
 
-        {/* Canvas */}
         <div style={{ flex: 1, position: 'relative' }}>
           <Canvas camera={{ position: [1.2, 1, 1.2], fov: 45 }}>
             <ambientLight intensity={0.4} />
@@ -205,7 +191,6 @@ export default function ArmDeck() {
                   <RosJointStateDriver robot={robot} enabled={rosJointControl} />
                 </>
               )}
-              {/* Wrap in ROS→Three.js coordinate transform (Z-up → Y-up) */}
               <group rotation={[-Math.PI / 2, 0, 0]}>
                 <RosPointCloud visible={showPointCloud} />
               </group>
@@ -219,7 +204,6 @@ export default function ArmDeck() {
           {robot && <EEPosePanel poseRef={eePoseRef} />}
         </div>
 
-        {/* Right — transport + ROS */}
         <div style={{ width: 210, background: '#1a1a2a', overflowY: 'auto', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
           <TransportPanel
             frameCount={frameCount}

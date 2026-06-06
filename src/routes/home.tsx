@@ -119,62 +119,31 @@ function PortfolioCard({ icon, title, description, tags, onClick }: {
 }
 
 function ArmDeckCard({ onNavigate }: { onNavigate: (href: string) => void }) {
-  const [hovered, setHovered] = useState<string | null>(null)
-  const phases = [
-    { label: 'Phase 1', sublabel: 'URDF Viewer', href: '/armdeck/phase1' },
-    { label: 'Phase 2', sublabel: 'Inverse Kinematics', href: '/armdeck/phase2' },
-    { label: 'Phase 3', sublabel: 'Recording & Playback', href: '/armdeck/phase3' },
-    { label: 'Phase 4', sublabel: 'ROS2 Integration', href: '/armdeck/phase4', latest: true },
-  ]
+  const [hovered, setHovered] = useState(false)
 
   return (
-    <div style={{
-      background: 'var(--surface)',
-      border: '1px solid var(--border)',
-      borderRadius: 10,
-      padding: '22px 24px',
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 24, flexWrap: 'wrap' }}>
-        <div style={{ flex: '1 1 240px' }}>
-          <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-1)', marginBottom: 8 }}>🦾 ArmDeck</div>
-          <div style={{ fontSize: 13, color: 'var(--text-3)', lineHeight: 1.6, marginBottom: 16 }}>
-            Robotic arm built in four progressive phases — URDF loading, inverse kinematics, trajectory recording, full ROS2 hardware integration
-          </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-            {['URDF', 'closed-chain-ik', 'Foxglove WS', 'CDR binary', 'IndexedDB', 'TF Visualizer'].map(t => (
-              <Tag key={t} label={t} />
-            ))}
-          </div>
-        </div>
-
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-start' }}>
-          {phases.map(({ label, sublabel, href, latest }) => {
-            const isHovered = hovered === href
-            return (
-              <div
-                key={href}
-                onClick={() => onNavigate(href)}
-                onMouseEnter={() => setHovered(href)}
-                onMouseLeave={() => setHovered(null)}
-                style={{
-                  padding: '10px 16px',
-                  background: isHovered ? 'var(--surface-2)' : (latest ? 'var(--accent-soft)' : 'var(--surface-2)'),
-                  border: `1px solid ${isHovered ? 'var(--accent)' : (latest ? 'var(--accent-border)' : 'var(--border)')}`,
-                  borderRadius: 8,
-                  cursor: 'pointer',
-                  transition: 'border-color 0.15s, background 0.15s',
-                  textAlign: 'center',
-                  minWidth: 116,
-                }}
-              >
-                <div style={{ fontSize: 11, fontWeight: 700, color: latest ? 'var(--accent)' : 'var(--text-4)', marginBottom: 4 }}>
-                  {label}{latest ? '  ★' : ''}
-                </div>
-                <div style={{ fontSize: 12, color: isHovered ? 'var(--text-2)' : 'var(--text-3)' }}>{sublabel}</div>
-              </div>
-            )
-          })}
-        </div>
+    <div
+      onClick={() => onNavigate('/armdeck')}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: hovered ? 'var(--surface-2)' : 'var(--surface)',
+        border: `1px solid ${hovered ? 'var(--border-strong)' : 'var(--border)'}`,
+        borderRadius: 10,
+        padding: '20px 22px',
+        cursor: 'pointer',
+        transition: 'border-color 0.15s, background 0.15s',
+      }}
+    >
+      <div style={{ fontSize: 26, marginBottom: 12 }}>🦾</div>
+      <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-1)', marginBottom: 8 }}>ArmDeck</div>
+      <div style={{ fontSize: 13, color: 'var(--text-3)', lineHeight: 1.6, marginBottom: 16 }}>
+        Robotic arm teleop platform — URDF loading, inverse kinematics, trajectory recording, full ROS2 hardware integration
+      </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+        {['URDF', 'closed-chain-ik', 'Foxglove WS', 'CDR binary', 'IndexedDB', 'TF Visualizer'].map(t => (
+          <Tag key={t} label={t} />
+        ))}
       </div>
     </div>
   )
