@@ -15,7 +15,11 @@
     "mock-rosbridge": "node scripts/mock-rosbridge-server.mjs",
     "dataset-server": "node scripts/dataset-server.mjs",
     "fetch-ur5e": "node scripts/fetch-ur5e.mjs",
-    "dev:all": "concurrently \"pnpm dev\" \"pnpm dataset-server\""
+    "dev:all": "concurrently \"pnpm dev\" \"pnpm dataset-server\"",
+    "ros2:start": "bash scripts/ros2-bridge.sh start",
+    "ros2:stop": "bash scripts/ros2-bridge.sh stop",
+    "ros2:logs": "bash scripts/ros2-bridge.sh logs",
+    "ros2:shell": "bash scripts/ros2-bridge.sh shell"
   },
   "dependencies": {
     "@foxglove/ws-protocol": "^0.8.0",

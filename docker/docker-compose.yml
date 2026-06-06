@@ -1,0 +1,11 @@
+services:
+  ros2-bridge:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: web3d-ros2-bridge:humble
+    container_name: ros2-bridge
+    ports:
+      - "8765:8765"
+    restart: unless-stopped
+    tty: true
